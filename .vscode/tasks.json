@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-I${workspaceFolder}/dependencies/include",
+                "src/*.c",
+                "-Wall",
+                "-fdiagnostics-color=always",
+                "-L${workspaceFolder}/dependencies/lib",
+                "-lglfw3",
+                "-lopengl32",
+                "-lgdi32",
+                "-o",
+                "${workspaceFolder}\\${fileBasenameNoExtension}.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Compiles and links the source files into an executable"
+        }
+    ]
+}
