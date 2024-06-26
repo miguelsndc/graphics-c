@@ -9,6 +9,7 @@
                 "-I${workspaceFolder}/dependencies/include",
                 "src/*.c",
                 "-Wall",
+                "-mwindows",
                 "-fdiagnostics-color=always",
                 "-L${workspaceFolder}/dependencies/lib",
                 "-lglfw3",
