@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/dependencies/**"
+                "d:/Users/msnc/Documents/graphics-c/dependencies/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -12,9 +12,42 @@
             ],
             "windowsSdkVersion": "10.0.20348.0",
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/mingw64/bin/g++.exe",
+            "compilerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
             "cStandard": "c23",
-            "cppStandard": "c++20"
+            "cppStandard": "c++20",
+            "compilerPathInCppPropertiesJson": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "d:/Users/msnc/Documents/graphics-c/dependencies/**",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        },
+        {
+            "name": "CIN",
+            "includePath": [
+                "d:/Users/msnc/Documents/graphics-c/dependencies/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
+            "compilerPathInCppPropertiesJson": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++17",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "d:/Users/msnc/Documents/graphics-c/**",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4
