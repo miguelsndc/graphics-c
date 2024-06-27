@@ -4,10 +4,10 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "gcc",
+            "command": "g++",
             "args": [
                 "-I${workspaceFolder}/dependencies/include",
-                "src/*.c",
+                "src/*.cpp",
                 "-Wall",
                 "-mwindows",
                 "-fdiagnostics-color=always",

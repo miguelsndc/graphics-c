@@ -12,14 +12,12 @@
             ],
             "windowsSdkVersion": "10.0.20348.0",
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/mingw64/bin/gcc.exe",
+            "compilerPath": "C:/mingw64/bin/g++.exe",
             "cStandard": "c23",
             "cppStandard": "c++20",
-            "compilerPathInCppPropertiesJson": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
             "mergeConfigurations": false,
             "browse": {
                 "path": [
-                    "d:/Users/msnc/Documents/graphics-c/dependencies/**",
                     "c:/Users/Paula/Documents/cs/glshit"
                 ],
                 "limitSymbolsToIncludedHeaders": true
