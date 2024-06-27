@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "d:/Users/msnc/Documents/graphics-c/dependencies/**"
+                "${workspaceFolder}/dependencies/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -12,7 +12,7 @@
             ],
             "windowsSdkVersion": "10.0.20348.0",
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
+            "compilerPath": "C:/mingw64/bin/gcc.exe",
             "cStandard": "c23",
             "cppStandard": "c++20",
             "compilerPathInCppPropertiesJson": "C:/Program Files/CodeBlocks/MinGW/bin/gcc.exe",
@@ -20,7 +20,7 @@
             "browse": {
                 "path": [
                     "d:/Users/msnc/Documents/graphics-c/dependencies/**",
-                    "${workspaceFolder}"
+                    "c:/Users/Paula/Documents/cs/glshit"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             }
