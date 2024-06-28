@@ -1,6 +1,9 @@
 #include <glad.h>
 #include <glfw3.h>
+#include <math.h>
 #include <stdio.h>
+
+#include <filesystem>
 
 #include "shader.hpp"
 
@@ -10,6 +13,10 @@ void process_input(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+// fix this later lol
+const char *vshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader.vert";
+const char *fshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader.frag";
 
 int main() {
     // glfw initialize and configure
@@ -37,14 +44,13 @@ int main() {
         return -1;
     }
 
-    Shader sh("./shader.vert", "./shader.frag");
-
+    Shader sh(vshader_path, fshader_path);
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ---------------------------------------------
     float vertices[] = {
-        0.0f, 0.5f, 0.0f,
-        -0.5, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f};
+        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5, -0.5f, 0.0f, 0.0, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
 
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
@@ -53,8 +59,12 @@ int main() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);                                         // bind the VBO to gl's target
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  // bind the
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    // positions
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
+    // colors
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // render loop
     // ------------------------------------------
@@ -67,10 +77,11 @@ int main() {
         // ------------------------------------
         // set specific red/green/blue/alpha values to the color buffer
         // call functions that uses the state set by the setter before
-        glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+        glClearColor(0.05f, 0.05f, 0.03f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw the thing
+
         sh.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
