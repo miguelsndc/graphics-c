@@ -22,6 +22,7 @@ const char *vshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader
 const char *fshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader.frag";
 const char *container_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\textures\\container.jpg";
 const char *awesomeface_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\textures\\awesomeface.png";
+float mix_val = 0.2;
 
 int main() {
     // glfw initialize and configure
@@ -44,6 +45,7 @@ int main() {
 
     // glad load opengl function pointers
     // -----------------------------------
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         printf("Failed to initialize GLAD");
         return -1;
@@ -139,21 +141,16 @@ int main() {
         // -------------------------------------
         process_input(window);
 
-        // render
-        // ------------------------------------
-        // call functions that uses the state set by the setter before
-        // set specific red/green/blue/alpha values to the color buffer
-        glClearColor(0.05f, 0.05f, 0.03f, 1.0f);
+        glClearColor(0.15f, 0.25f, 0.33f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // draw the thing
-        // sh.use();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        // glBindTexture(GL_TEXTURE_2D, texture1);
+        sh.set_float("mix_value", mix_val);
+
         sh.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -179,5 +176,15 @@ void framebuffer_size_callback(GLFWwindow *window, int w, int h) {
 void process_input(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        mix_val += 0.001f;
+        if (mix_val >= 1.0f) {
+            mix_val = 1.0f;
+        }
+    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        mix_val -= 0.001f;
+        if (mix_val <= 0.0f) {
+            mix_val = 0.0f;
+        }
     }
 }
