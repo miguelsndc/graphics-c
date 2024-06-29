@@ -21,6 +21,7 @@ const unsigned int SCR_HEIGHT = 600;
 const char *vshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader.vert";
 const char *fshader_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\src\\shader.frag";
 const char *container_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\textures\\container.jpg";
+const char *awesomeface_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\textures\\awesomeface.png";
 
 int main() {
     // glfw initialize and configure
@@ -88,30 +89,18 @@ int main() {
     // texture coords
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    // texture coordinates start from (0,0) at the lower left and end at (1,1) at top right
 
-    // float texture_coords[] = {
-    //     0.0f, 0.0f,   // left bottom
-    //     1.0f, 0.0f,   // right bottom
-    //     0.5f, 1.0f};  // center top
-
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    // Texture filtering can be set for magnifying and minifying operations (when scaling up or downwards)
-    // gl nearest pick's the color of the nearest neighbour texel to the center of the texture coordinate
-    // GL_LINEAR: (docs) Returns the weighted average of the texture elements that are closest to the specified texture coordinate
-    // so it basically interpolates the colors and find's a color
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-    // mipmaps have no effect on upscaling so setting the mag filter to a mipmap doesn't do anything (GL_INVALID_ENUM ERROR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // mipmaps are a collection of images where each is twice as small compared to the previous one
-    // for efficiency's sake, different mipmaps are applied to objects when a certain distance threshold
-    // is met, opengl uses the according mipmap to correctly sample the texels
+
     int width, height, nr_channels;
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load(container_image_path, &width, &height, &nr_channels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -122,6 +111,27 @@ int main() {
 
     stbi_image_free(data);
 
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    data = stbi_load(awesomeface_image_path, &width, &height, &nr_channels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cout << "FAILED TO LOAD TEXTURE 2" << std::endl;
+    }
+    stbi_image_free(data);
+
+    sh.use();
+    sh.set_int("texture1", 0);
+    sh.set_int("texture2", 1);
+
     // render loop
     // ------------------------------------------
     while (!glfwWindowShouldClose(window)) {
@@ -131,14 +141,20 @@ int main() {
 
         // render
         // ------------------------------------
-        // set specific red/green/blue/alpha values to the color buffer
         // call functions that uses the state set by the setter before
+        // set specific red/green/blue/alpha values to the color buffer
         glClearColor(0.05f, 0.05f, 0.03f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw the thing
+        // sh.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
+        // glBindTexture(GL_TEXTURE_2D, texture1);
         sh.use();
-        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -149,6 +165,7 @@ int main() {
     // unbind and terminate glfw
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     sh.destroy();
     glfwTerminate();
 

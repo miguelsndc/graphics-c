@@ -3,8 +3,12 @@
 in vec3 our_color;
 in vec2 tex_coord;
 out vec4 FragColor;
-uniform sampler2D our_texture;
+
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 void main() {
-    FragColor = texture2D(our_texture, tex_coord) * vec4(our_color, 1.0);
+    // mix(x, y, a) interpolates x and y with some weight a between 0 and 1
+    // calculated as follows: mix(x,y,a) = x(1 - a) + y * a
+    FragColor = mix(texture2D(texture1, tex_coord), texture2D(texture2, vec2(1.0 - tex_coord.x, tex_coord.y)), 0.2);
 }
