@@ -27,6 +27,20 @@ const char *container_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\tex
 const char *awesomeface_image_path = "C:\\Users\\Paula\\Documents\\cs\\glshit\\textures\\awesomeface.png";
 float mix_val = 0.4;
 
+glm::vec3 camera_pos = glm::vec3(0.f, 0.f, 3.f);
+glm::vec3 camera_front = glm::vec3(0.f, 0.f, -1.f);
+glm::vec3 camera_up = glm::vec3(0.f, 1.0f, 0.f);
+
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
+float yaw = -90.0f;
+float pitch = 0.f;
+float last_x = 400, last_y = 300;
+bool first_mouse = true;
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+
 int main() {
     // glfw initialize and configure
     // ---------------------------------------
@@ -45,6 +59,8 @@ int main() {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad load opengl function pointers
     // -----------------------------------
@@ -175,9 +191,24 @@ int main() {
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
 
+    // camera -------------------------------------------------
+
+    // gram-schmidt for stablishing a coordinate system for our camera
+    // glm::vec3 camera_pos = glm::vec3(0.0f, 0.f, 3.f);
+    // glm::vec3 camera_target = glm::vec3(0.f);
+    // glm::vec3 camera_direction = glm::normalize(camera_pos - camera_target);
+    // glm::vec3 up = glm::vec3(0.f, 1.f, 0.f);
+    // glm::vec3 camera_right = glm::normalize(glm::cross(up, camera_direction));
+    // glm::vec3 camera_up = glm::normalize(glm::cross(camera_direction, camera_right));
+
+    // --------------------------------------------------------
+
     // render loop
     // ------------------------------------------
     while (!glfwWindowShouldClose(window)) {
+        float time = glfwGetTime();
+        delta_time = time - last_frame;
+        last_frame = time;
         // media input
         // -------------------------------------
         process_input(window);
@@ -190,10 +221,7 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        glm::mat4 view = glm::mat4(1.0f);
-        float time = glfwGetTime();
-        view = glm::translate(view, glm::vec3(sin(time), 0.0, cos(time) - 3));
-
+        glm::mat4 view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
         glUniformMatrix4fv(sh.loc("view"), 1, GL_FALSE, glm::value_ptr(view));
 
         glBindVertexArray(VAO);
@@ -201,7 +229,7 @@ int main() {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * (i + 1);
-            model = glm::rotate(model, 1.5f * time * glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, 1.5f * time * glm::radians(angle) * (i % 3 == 0), glm::vec3(1.0, 0, 0.0f));
             glUniformMatrix4fv(sh.loc("model"), 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
@@ -227,4 +255,53 @@ void process_input(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+
+    const float camera_speed = 2.5f * delta_time;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera_pos += camera_speed * camera_front;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera_pos -= camera_speed * camera_front;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        camera_pos += camera_up * camera_speed;
+    }
+    // if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    //     camera_pos -= camera_up * camera_speed;
+    // }
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    if (first_mouse) {
+        last_x = xpos;
+        last_y = ypos;
+        first_mouse = false;
+    }
+
+    float xoffset = xpos - last_x;
+    float yoffset = last_y - ypos;  // reversed because y coordinates range frmo bottom to top
+    last_x = xpos;
+    last_y = ypos;
+
+    const float sensitivity = 0.01f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    pitch = std::max(-89.f, std::min(pitch, 89.f));
+
+    glm::vec3 direction;
+
+    direction.x = glm::cos(yaw) * glm::cos(pitch);
+    direction.y = glm::sin(pitch);
+    direction.z = glm::sin(yaw) * glm::cos(pitch);
+    camera_front = glm::normalize(direction);
 }
